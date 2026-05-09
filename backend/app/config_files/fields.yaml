@@ -1,0 +1,13 @@
+- {key: 合同类型,        label: 合同类型}
+- {key: 项目序号,        label: 项目序号}
+- {key: 合同名称,        label: 合同名称}
+- {key: 合作方,          label: 合作方}
+- {key: 甲方公司,        label: 甲方公司}
+- {key: 乙方公司,        label: 乙方公司}
+- {key: 合同年度,        label: 合同年度}
+- {key: 项目编号,        label: 项目编号}
+- {key: 合同金额,        label: 合同金额}
+- {key: 合同币种,        label: 合同币种}
+- {key: 合同期限,        label: 合同期限}
+- {key: 违约金额/比例,   label: 违约金额/比例}
+- {key: 审计条款,        label: 审计条款}
