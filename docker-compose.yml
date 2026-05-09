@@ -20,7 +20,7 @@ services:
       - ./backend:/code
       - ./storage:/storage
     depends_on: [postgres, redis]
-    ports: ["8000:8000"]
+    ports: ["8003:8000"]
 
   worker:
     build: ./backend
@@ -39,7 +39,7 @@ services:
       - ./frontend:/app
       - /app/node_modules
       - /app/.next
-    ports: ["3000:3000"]
+    ports: ["3003:3000"]
     depends_on: [api]
 
 volumes:
