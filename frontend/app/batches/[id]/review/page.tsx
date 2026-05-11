@@ -84,6 +84,7 @@ export default function Review({ params }: { params: { id: string } }) {
               {FIELDS.map(([k, l]) => (
                 <th key={k} style={{ minWidth: 140 }}>{l}</th>
               ))}
+              <th style={{ minWidth: 110 }}>归档时间</th>
               <th style={{ minWidth: 200 }}>文件名</th>
             </tr>
           </thead>
@@ -110,6 +111,7 @@ export default function Review({ params }: { params: { id: string } }) {
                       </td>
                     );
                   })}
+                  <td>{(data.created_at ?? "").slice(0, 10)}</td>
                   <td>{d.filename}</td>
                 </tr>
               );
