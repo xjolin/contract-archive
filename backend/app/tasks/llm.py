@@ -29,8 +29,11 @@ FIELD_RULES = {
 }
 
 
+EXCLUDED_KEYS = {"项目序号"}  # 不让 AI 抽取，由人工填写
+
+
 def _build_schema():
-    keys = [f["key"] for f in FIELDS]
+    keys = [f["key"] for f in FIELDS if f["key"] not in EXCLUDED_KEYS]
     return {
         "type": "object",
         "properties": {
