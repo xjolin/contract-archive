@@ -51,3 +51,25 @@ def get_batch(bid: int, db: Session = Depends(get_db)):
     if not b:
         raise HTTPException(404)
     return b
+
+
+@router.delete("/{bid}")
+def delete_batch(bid: int, db: Session = Depends(get_db)):
+    b = db.get(Batch, bid)
+    if not b:
+        raise HTTPException(404)
+    # 删除磁盘上的 PDF 目录
+    folder = pathlib.Path(settings.storage_dir) / str(b.id)
+    if folder.exists():
+        for f in folder.iterdir():
+            try:
+                f.unlink()
+            except Exception:
+                pass
+        try:
+            folder.rmdir()
+        except Exception:
+            pass
+    db.delete(b)  # cascade 删除 documents
+    db.commit()
+    return {"ok": True}
