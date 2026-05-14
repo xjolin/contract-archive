@@ -3,6 +3,7 @@ import pathlib
 import re
 import httpx
 import yaml
+from loguru import logger
 from app.config import settings
 
 FIELDS = yaml.safe_load(
@@ -53,6 +54,12 @@ def extract_fields(text: str) -> dict:
         f"合同内容：{text}"
     )
 
+    logger.info(
+        "[LLM] prompt_len={} preview={}",
+        len(user_prompt),
+        user_prompt[:300].replace("\n", " "),
+    )
+
     resp = httpx.post(
         f"{settings.ollama_url.rstrip('/')}/api/chat",
         json={
@@ -69,7 +76,15 @@ def extract_fields(text: str) -> dict:
         timeout=900,
     )
     resp.raise_for_status()
-    raw = resp.json()["message"]["content"]
+    payload = resp.json()
+    raw = payload["message"]["content"]
+    logger.info(
+        "[LLM] model={} done_reason={} eval_count={} content={}",
+        payload.get("model"),
+        payload.get("done_reason"),
+        payload.get("eval_count"),
+        raw,
+    )
     # 兜底：即便 think=false 不被旧版 Ollama 识别，也去掉可能的思考标签
     raw = re.sub(r"<think>.*?</think>", "", raw, flags=re.S).strip()
     try:
