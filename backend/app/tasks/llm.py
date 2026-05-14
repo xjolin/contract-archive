@@ -1,5 +1,6 @@
 import json
 import pathlib
+import re
 import httpx
 import yaml
 from app.config import settings
@@ -62,12 +63,15 @@ def extract_fields(text: str) -> dict:
             ],
             "format": _build_schema(),
             "stream": False,
-            "options": {"temperature": 0, "num_predict": 1200},
+            "think": False,  # Qwen3 系列：禁用思考过程，避免占满 num_predict
+            "options": {"temperature": 0, "num_predict": 2048},
         },
         timeout=900,
     )
     resp.raise_for_status()
     raw = resp.json()["message"]["content"]
+    # 兜底：即便 think=false 不被旧版 Ollama 识别，也去掉可能的思考标签
+    raw = re.sub(r"<think>.*?</think>", "", raw, flags=re.S).strip()
     try:
         data = json.loads(raw)
     except json.JSONDecodeError:

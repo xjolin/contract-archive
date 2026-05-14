@@ -99,8 +99,10 @@ export default function Page({ params }: { params: { id: string } }) {
               <td>{d.retry_count}</td>
               <td style={{ color: "#c00", fontSize: 12 }}>{d.error}</td>
               <td>
-                {d.status === "failed" && (
-                  <button onClick={() => retry(d.id)}>重试</button>
+                {d.status !== "done" && (
+                  <button onClick={() => retry(d.id)}>
+                    {d.status === "failed" ? "重试" : "重置"}
+                  </button>
                 )}
               </td>
             </tr>

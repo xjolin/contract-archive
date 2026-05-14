@@ -10,9 +10,22 @@ export default function Home() {
   const [batches, setBatches] = useState<any[]>([]);
   const router = useRouter();
 
+  async function loadBatches() {
+    try {
+      const r = await fetch("/api/batches");
+      setBatches(await r.json());
+    } catch {}
+  }
+
   useEffect(() => {
-    fetch("/api/batches").then(r => r.json()).then(setBatches).catch(() => {});
+    loadBatches();
   }, []);
+
+  async function deleteBatch(id: number, name: string) {
+    if (!confirm(`确认删除批次 "${name}" 及其全部记录？此操作不可恢复。`)) return;
+    await fetch(`/api/batches/${id}`, { method: "DELETE" });
+    loadBatches();
+  }
 
   async function submit() {
     if (!name || files.length === 0) return;
@@ -68,7 +81,20 @@ export default function Home() {
               </Link>{" "}
               <span style={{ color: "#888", fontSize: 12 }}>
                 {b.documents.length} 份 / {b.created_at?.slice(0, 16)}
-              </span>
+              </span>{" "}
+              <button
+                onClick={() => deleteBatch(b.id, b.name)}
+                style={{
+                  marginLeft: 8,
+                  fontSize: 12,
+                  color: "#c00",
+                  background: "none",
+                  border: "1px solid #c00",
+                  padding: "2px 8px",
+                }}
+              >
+                删除
+              </button>
             </li>
           ))}
         </ul>
