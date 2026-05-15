@@ -141,7 +141,9 @@ def extract_fields(text: str) -> dict:
                 {"role": "user", "content": user_prompt},
             ],
             temperature=0,
-            max_tokens=2048,
+            max_tokens=4096,
+            # Ollama 专属：禁用 Qwen3 的 <think> 推理，避免 token 被思考过程吃光
+            extra_body={"think": False, "options": {"num_ctx": 16384}},
         )
     except ValidationError as e:
         logger.error("[LLM] 校验失败已用尽重试: {}", e)
