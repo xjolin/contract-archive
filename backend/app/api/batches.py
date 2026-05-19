@@ -25,11 +25,11 @@ async def create_batch(
     folder.mkdir(parents=True, exist_ok=True)
 
     docs: list[Document] = []
-    for f in files:
+    for idx, f in enumerate(files):
         safe_name = f"{uuid.uuid4().hex}_{f.filename}"
         path = folder / safe_name
         path.write_bytes(await f.read())
-        d = Document(batch_id=batch.id, filename=f.filename, path=str(path))
+        d = Document(batch_id=batch.id, filename=f.filename, path=str(path), sort_order=idx)
         db.add(d)
         docs.append(d)
     db.commit()

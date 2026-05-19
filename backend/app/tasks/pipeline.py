@@ -41,6 +41,8 @@ def process_document(self, doc_id: int):
         with SessionLocal() as s:
             d = s.get(Document, doc_id)
             path = d.path
+            d.error = None
+            s.commit()
 
         _update(doc_id, "ocr_running")
         text = run_mineru(path)

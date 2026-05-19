@@ -19,6 +19,7 @@ def retry(did: int, db: Session = Depends(get_db)):
         raise HTTPException(404)
     d.status = "pending"
     d.error = None
+    d.retry_count = 0
     db.commit()
     process_document.delay(did)
     return {"ok": True}

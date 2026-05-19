@@ -1,6 +1,7 @@
 from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
 from sqlalchemy import String, Integer, ForeignKey, JSON, DateTime, Text, func
+from sqlalchemy import asc
 
 
 class Base(DeclarativeBase):
@@ -14,7 +15,8 @@ class Batch(Base):
     status: Mapped[str] = mapped_column(String(20), default="running")
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     documents: Mapped[list["Document"]] = relationship(
-        back_populates="batch", cascade="all, delete-orphan"
+        back_populates="batch", cascade="all, delete-orphan",
+        order_by="Document.sort_order"
     )
 
 
@@ -22,6 +24,7 @@ class Document(Base):
     __tablename__ = "documents"
     id: Mapped[int] = mapped_column(primary_key=True)
     batch_id: Mapped[int] = mapped_column(ForeignKey("batches.id"))
+    sort_order: Mapped[int] = mapped_column(Integer, default=0)
     filename: Mapped[str] = mapped_column(String(300))
     path: Mapped[str] = mapped_column(String(500))
     status: Mapped[str] = mapped_column(String(20), default="pending")

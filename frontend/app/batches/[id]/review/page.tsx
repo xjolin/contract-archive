@@ -32,6 +32,16 @@ export default function Review({ params }: { params: { id: string } }) {
     load();
   }, [params.id]);
 
+  useEffect(() => {
+    if (Object.keys(dirty).length === 0) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [dirty]);
+
   const rows = useMemo(
     () => (data?.documents ?? []).filter((d: any) => d.status === "done"),
     [data]

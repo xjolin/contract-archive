@@ -29,6 +29,11 @@ def _startup():
             with engine.connect() as conn:
                 conn.execute(text("SELECT 1"))
             Base.metadata.create_all(engine)
+            # add sort_order column to existing deployments that predate this field
+            conn.execute(text(
+                "ALTER TABLE documents ADD COLUMN IF NOT EXISTS sort_order INTEGER NOT NULL DEFAULT 0"
+            ))
+            conn.commit()
             return
         except Exception as e:
             last_err = e
