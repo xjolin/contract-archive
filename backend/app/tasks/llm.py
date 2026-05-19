@@ -63,8 +63,7 @@ def extract_fields(text: str) -> dict:
             ],
             "format": _build_schema(),
             "stream": False,
-            "think": False,  # Qwen3 系列：禁用思考过程，避免占满 num_predict
-            "options": {"temperature": 0, "num_predict": 2048},
+            "options": {"temperature": 0, "num_predict": 8192},
         },
         timeout=900,
     )
@@ -72,10 +71,14 @@ def extract_fields(text: str) -> dict:
     raw = resp.json()["message"]["content"]
     # 兜底：即便 think=false 不被旧版 Ollama 识别，也去掉可能的思考标签
     raw = re.sub(r"<think>.*?</think>", "", raw, flags=re.S).strip()
+    if not raw:
+        raise RuntimeError("模型返回空内容，可能输出被截断，请重试")
     try:
         data = json.loads(raw)
     except json.JSONDecodeError:
         s, e = raw.find("{"), raw.rfind("}")
+        if s == -1 or e == -1:
+            raise RuntimeError(f"模型未返回有效 JSON，原始内容：{raw[:200]}")
         data = json.loads(raw[s : e + 1])
 
     data.setdefault("项目序号", "")
