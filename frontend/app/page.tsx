@@ -54,7 +54,16 @@ export default function Home() {
           type="file"
           multiple
           accept="application/pdf"
-          onChange={e => setFiles(Array.from(e.target.files ?? []))}
+          onChange={e => {
+            const selected = Array.from(e.target.files ?? []);
+            if (selected.length > 20) {
+              alert(`一次最多上传 20 份，你选择了 ${selected.length} 份，请分批上传。`);
+              e.target.value = "";
+              setFiles([]);
+              return;
+            }
+            setFiles(selected);
+          }}
         />
         {files.length > 0 && (
           <ul style={{ fontSize: 13, color: "#555" }}>

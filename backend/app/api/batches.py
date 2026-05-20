@@ -17,6 +17,9 @@ async def create_batch(
     files: list[UploadFile] = File(...),
     db: Session = Depends(get_db),
 ):
+    if len(files) > 20:
+        raise HTTPException(400, detail=f"一次最多上传 20 份，收到 {len(files)} 份")
+
     batch = Batch(name=name, status="running")
     db.add(batch)
     db.flush()

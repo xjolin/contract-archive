@@ -13,7 +13,8 @@ def export_batch(batch, fields) -> BytesIO:
         if d.status != "done":
             continue
         ej = d.extracted_json or {}
-        ws.append([ej.get(f["key"]) for f in fields] + [archive_date, d.filename])
+        name_no_ext = d.filename.rsplit(".", 1)[0] if "." in d.filename else d.filename
+        ws.append([ej.get(f["key"]) for f in fields] + [archive_date, name_no_ext])
     for col in ws.columns:
         ws.column_dimensions[col[0].column_letter].width = 20
     buf = BytesIO()

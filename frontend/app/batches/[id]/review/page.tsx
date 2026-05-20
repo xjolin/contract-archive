@@ -122,7 +122,7 @@ export default function Review({ params }: { params: { id: string } }) {
                     );
                   })}
                   <td>{(data.created_at ?? "").slice(0, 10)}</td>
-                  <td>{d.filename}</td>
+                  <td>{d.filename.replace(/\.[^.]+$/, "")}</td>
                 </tr>
               );
             })}
