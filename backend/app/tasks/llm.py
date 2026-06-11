@@ -112,23 +112,18 @@ class ContractInfo(BaseModel):
 
 _client = instructor.from_openai(
     OpenAI(
-        base_url=f"{settings.ollama_url.rstrip('/')}/v1",
-        api_key="ollama",  # Ollama 不校验，占位即可
+        base_url=settings.llm_base_url,
+        api_key=settings.llm_api_key,
     ),
     mode=instructor.Mode.JSON,
 )
 
 
 def extract_fields(text: str) -> dict:
-    if not settings.ollama_url:
-        raise RuntimeError("OLLAMA_URL 未配置")
+    if not settings.llm_base_url:
+        raise RuntimeError("LLM_BASE_URL 未配置")
 
     user_prompt = f"合同内容：\n{text}"
-    options = {"num_ctx": settings.llm_num_ctx}
-    if settings.llm_top_k > 0:
-        options["top_k"] = settings.llm_top_k
-    if settings.llm_seed is not None:
-        options["seed"] = settings.llm_seed
 
     logger.info(
         "[LLM] model={} prompt_len={} preview={}",
@@ -149,8 +144,6 @@ def extract_fields(text: str) -> dict:
             temperature=settings.llm_temperature,
             top_p=settings.llm_top_p,
             max_tokens=4096,
-            # Ollama 专属：禁用 Qwen3 的 <think> 推理，避免 token 被思考过程吃光
-            extra_body={"think": False, "options": options},
         )
     except ValidationError as e:
         logger.error("[LLM] 校验失败已用尽重试: {}", e)
