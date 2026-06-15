@@ -6,7 +6,7 @@ from sqlalchemy import text
 
 from app.db import engine
 from app.models import Base
-from app.api import batches, documents, stream, export
+from app.api import batches, documents, stream, export, stats
 
 app = FastAPI(title="Contract Archive")
 app.add_middleware(
@@ -20,6 +20,7 @@ app.include_router(batches.router)
 app.include_router(documents.router)
 app.include_router(stream.router)
 app.include_router(export.router)
+app.include_router(stats.router)
 
 @app.on_event("startup")
 def _startup():
